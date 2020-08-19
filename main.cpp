@@ -5,7 +5,7 @@
 #include "shaders/Shader.h"
 
 #include "fisica/fisica_vetor.h"
-#include "objetos/Barreira_2d.h"
+#include "objetos/Parede_2d.h"
 
 #include "io/Teclado.h"
 
@@ -44,23 +44,19 @@ int main (int argc, char *argv[]) {
 
 	Vec_2f posicao;
 	Vec_2f direcao;
+	Vec_2f normal;
 	float t = 0;
 
 	float distancia_colisao;
 	float distancia_colisao_aux;
 	size_t menor_distancia_colisao_id;
 
-	Barreira_2d<float> barreiras[4];
+	Parede_2d<float> parede( Vec_2f( -0.2f, -0.2f ), 0.4f, 0.4f );
 	
 	Teclado teclado;
 
 	Heroi<float> heroi( Vec_2f(0.0f, 0.0f), 0.05f, 0.05f, "modelos/Heroi.png" );
 
-	barreiras[0] = Barreira_2d<float>( Vec_2f( -0.2f,  0.2f ), Vec_2f(  0.2f,  0.2f ) );
-	barreiras[1] = Barreira_2d<float>( Vec_2f(  0.2f,  0.2f ), Vec_2f(  0.2f, -0.2f ) );
-	barreiras[2] = Barreira_2d<float>( Vec_2f(  0.2f, -0.2f ), Vec_2f( -0.2f, -0.2f ) );
-	barreiras[3] = Barreira_2d<float>( Vec_2f( -0.2f, -0.2f ), Vec_2f( -0.2f,  0.2f ) );
-	
 	while ( loop ) {
 
 		while ( SDL_PollEvent( &evento ) ) {
@@ -110,27 +106,17 @@ int main (int argc, char *argv[]) {
 			distancia_colisao = std::numeric_limits<float>::infinity();
 			distancia_colisao_aux = 0.0f;
 
-			for ( size_t i = 0; i < 4; i++ ) {
-				if ( teste_colisao( heroi.posicao, pos_aux
-				                  , barreiras[i].p_inicial, barreiras[i].p_final
-								  , barreiras[i].normal, distancia_colisao_aux ) ) {		
-					
-					if ( distancia_colisao > distancia_colisao_aux
-					&&   distancia_colisao_aux > 1.0e-3f ) {
-						distancia_colisao = distancia_colisao_aux;
-						menor_distancia_colisao_id = i;
-					}
-					colidiu = true;
-				}
-			}
-
+			colidiu = parede.testar_colisao( heroi.posicao, pos_aux, normal, distancia_colisao );
+			
 			if ( colidiu ) {
 				
 				if ( !isinf( distancia_colisao ) )
 					pos_aux = heroi.posicao + ( direcao * distancia_colisao * 0.99f );
 				else
 					pos_aux = heroi.posicao;
-				direcao = colisao( direcao, barreiras[menor_distancia_colisao_id].normal, 1.0f, 0.0f );
+				
+				direcao = colisao( direcao, normal, 1.0f, 0.0f );
+
 			}
 
 		} while ( colidiu );
@@ -160,14 +146,14 @@ int main (int argc, char *argv[]) {
 		mudar_f( shader, "abertura", cos( M_PI_4 * 0.25 ) );
 
 		
-		mudarVec2_fv( shader, "barreiras[0].pos_1", barreiras[0].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[0].pos_2", barreiras[0].p_final.coord );
-		mudarVec2_fv( shader, "barreiras[1].pos_1", barreiras[1].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[1].pos_2", barreiras[1].p_final.coord );
-		mudarVec2_fv( shader, "barreiras[2].pos_1", barreiras[2].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[2].pos_2", barreiras[2].p_final.coord );
-		mudarVec2_fv( shader, "barreiras[3].pos_1", barreiras[3].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[3].pos_2", barreiras[3].p_final.coord );
+		mudarVec2_fv( shader, "barreiras[0].pos_1", parede.barreiras[0].p_inicial.coord );
+		mudarVec2_fv( shader, "barreiras[0].pos_2", parede.barreiras[0].p_final.coord );
+		mudarVec2_fv( shader, "barreiras[1].pos_1", parede.barreiras[1].p_inicial.coord );
+		mudarVec2_fv( shader, "barreiras[1].pos_2", parede.barreiras[1].p_final.coord );
+		mudarVec2_fv( shader, "barreiras[2].pos_1", parede.barreiras[2].p_inicial.coord );
+		mudarVec2_fv( shader, "barreiras[2].pos_2", parede.barreiras[2].p_final.coord );
+		mudarVec2_fv( shader, "barreiras[3].pos_1", parede.barreiras[3].p_inicial.coord );
+		mudarVec2_fv( shader, "barreiras[3].pos_2", parede.barreiras[3].p_final.coord );
 
 		
 		fundo.mostrar();
