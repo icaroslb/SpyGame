@@ -21,6 +21,7 @@ public:
     virtual void mover ( const Vec_2<T> &direcao, T magnitude ) = 0;
 
     virtual void mostrar ( const Shader &shader ) = 0;
+    
 };
 
 #endif

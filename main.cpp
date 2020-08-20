@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "camera/Camera.h"
 #include "engines/Engine_OpenGl.h"
 #include "engines/Engine_SDL.h"
@@ -10,7 +11,7 @@
 #include "io/Teclado.h"
 
 #include "objetos/Plano_2d.h"
-#include "personagens/Heroi.h"
+#include "mapas/Mapa.h"
 
 int main (int argc, char *argv[]) {
     Camera<float> camera( Vec_3f(  0.0f,  0.0f,  0.0f ), // Posição
@@ -55,7 +56,9 @@ int main (int argc, char *argv[]) {
 	
 	Teclado teclado;
 
-	Heroi<float> heroi( Vec_2f(0.0f, 0.0f), 0.05f, 0.05f, "modelos/Heroi.png" );
+	Heroi<float> heroi( Vec_2f(0.0f, 0.0f), 0.05f, 0.05f, "modelos/heroi.png" );
+
+	Mapa<float> mapa( &heroi, "modelos/chao.png" );
 
 	while ( loop ) {
 
@@ -70,6 +73,16 @@ int main (int argc, char *argv[]) {
 				}
 				if ( evento.key.state == SDL_RELEASED ) {
 					teclado.mudar_estado( evento.key.keysym.sym );
+				}
+
+				switch ( evento.key.keysym.sym )
+				{
+				case SDLK_SPACE:
+					mapa.restart();
+				break;
+				
+				default:
+				break;
 				}
 			}
 		}
@@ -130,9 +143,11 @@ int main (int argc, char *argv[]) {
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		textura_shader.usar();
-
-		heroi.mostrar( textura_shader );
 		
+		mapa.mostrar_ambiente( textura_shader );
+
+		mapa.mostrar_personagens( textura_shader );
+
 		shader.usar();
 
 		direcao._x = float( cos(t) * 0.5 );
@@ -144,17 +159,19 @@ int main (int argc, char *argv[]) {
 		mudarVec2_fv( shader, "direcao", unitario( direcao ).coord );
 		mudar_f( shader, "raio", 0.5f );
 		mudar_f( shader, "abertura", cos( M_PI_4 * 0.25 ) );
+		mudar_i( shader, "qtd_barreiras", 4 );
 
-		
-		mudarVec2_fv( shader, "barreiras[0].pos_1", parede.barreiras[0].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[0].pos_2", parede.barreiras[0].p_final.coord );
-		mudarVec2_fv( shader, "barreiras[1].pos_1", parede.barreiras[1].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[1].pos_2", parede.barreiras[1].p_final.coord );
-		mudarVec2_fv( shader, "barreiras[2].pos_1", parede.barreiras[2].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[2].pos_2", parede.barreiras[2].p_final.coord );
-		mudarVec2_fv( shader, "barreiras[3].pos_1", parede.barreiras[3].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[3].pos_2", parede.barreiras[3].p_final.coord );
+		std::string nome_1 = "barreiras[-].pos_1";
+		std::string nome_2 = "barreiras[-].pos_2";
 
+		for ( int i = 0; i < 4; i++ )
+		{
+			nome_1[10] = '0' + i;
+			nome_2[10] = '0' + i;
+			
+			mudarVec2_fv( shader, nome_1, parede.barreiras[i].p_final.coord );
+			mudarVec2_fv( shader, nome_2, parede.barreiras[i].p_inicial.coord );
+		}
 		
 		fundo.mostrar();
 

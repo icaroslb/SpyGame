@@ -7,6 +7,7 @@ OBJ = obj/
 FISICA = $(wildcard fisica/*.h)
 OBJETOS = $(wildcard objetos/*.h)
 PERSONAGENS = $(wildcard personagens/*.h)
+MAPAS = $(wildcard mapas/*.h)
 
 all: $(OBJ) $(MAIN)
 
@@ -28,7 +29,7 @@ $(OBJ)Teclado.o: io/Teclado.cpp io/Teclado.h
 $(OBJ)Leitor_imagem.o: leitor_imagem/Leitor_imagem.cpp leitor_imagem/Leitor_imagem.h
 	g++ -g -c $< -o $@ $(INCLUDES) $(FLAGS) $(VERSION) $(LIBS)
 
-$(MAIN): $(OBJ)Engine_OpenGl.o $(OBJ)Engine_SDL.o $(OBJ)Shader.o $(OBJ)Teclado.o $(OBJ)Leitor_imagem.o camera/Canvas.h $(OBJETOS) $(PERSONAGENS) $(FISICA) $(MAIN).cpp
+$(MAIN): $(OBJ)Engine_OpenGl.o $(OBJ)Engine_SDL.o $(OBJ)Shader.o $(OBJ)Teclado.o $(OBJ)Leitor_imagem.o camera/Canvas.h $(OBJETOS) $(PERSONAGENS) $(MAPAS) $(FISICA) $(MAIN).cpp
 	g++ $^ -o $@ $(INCLUDES) $(FLAGS) $(VERSION) $(LIBS)
 
 clean:
