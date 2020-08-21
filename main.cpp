@@ -25,6 +25,7 @@ int main (int argc, char *argv[]) {
 	Engine_OpenGl opengl;
 	Shader shader( "shaders/shader.vs", "shaders/shader.fs" );
 	Shader textura_shader( "shaders/textura_shader.vs", "shaders/textura_shader.fs" );
+	Shader normal_shader( "shaders/normal_shader.vs", "shaders/normal_shader.fs" );
 	
 	SDL_Event evento;
 	bool loop = true;
@@ -37,15 +38,10 @@ int main (int argc, char *argv[]) {
 
 	printf( "Versão do OpenGl: %s\n", tela.obter_versao_opengl() );
 
-	Plano_2d<float> fundo( Vec_2f(  1.0f,  1.0f )
-	                     , Vec_2f(  1.0f, -1.0f )
-						 , Vec_2f( -1.0f, -1.0f )
-						 , Vec_2f( -1.0f,  1.0f )
-						 );
-
 	Vec_2f posicao;
 	Vec_2f direcao;
 	Vec_2f normal;
+	Vec_2f normal_aux;
 	float t = 0;
 
 	float distancia_colisao;
@@ -78,7 +74,7 @@ int main (int argc, char *argv[]) {
 				switch ( evento.key.keysym.sym )
 				{
 				case SDLK_SPACE:
-					mapa.restart();
+					mapa.restart( novo_tempo );
 				break;
 				
 				default:
@@ -113,25 +109,29 @@ int main (int argc, char *argv[]) {
 		if ( estado_teclado[SDL_SCANCODE_D] )
 			direcao += Vec_2f( 1.0f, 0.0f );
 			
-		direcao = unitario( direcao );
-		pos_aux = heroi.posicao + ( direcao * fator_tempo );
+		direcao = unitario( direcao ) * fator_tempo;
+		pos_aux = heroi.posicao + direcao;
 		do {
 			colidiu = false;
 
 			distancia_colisao = std::numeric_limits<float>::infinity();
 			distancia_colisao_aux = 0.0f;
 
-			colidiu = parede.testar_colisao( heroi.posicao, pos_aux, normal, distancia_colisao );
-			
-			if ( colidiu ) {
+			for ( int i = 0; i < mapa.paredes.size(); i++ ) {
+				colidiu = colidiu || mapa.paredes[i].testar_colisao( heroi.posicao, pos_aux, normal_aux, distancia_colisao_aux );
 				
-				if ( !isinf( distancia_colisao ) )
-					pos_aux = heroi.posicao + ( direcao * distancia_colisao * 0.99f );
-				else
-					pos_aux = heroi.posicao;
+				if ( colidiu && distancia_colisao_aux < distancia_colisao ) {
+					distancia_colisao = distancia_colisao_aux;
+					normal = normal_aux;
+				}
+			}
+
+			if ( colidiu ) {
+				if ( isinf( distancia_colisao ) )
+					heroi.posicao -= unitario( direcao ) * 0.01f;
 				
 				direcao = colisao( direcao, normal, 1.0f, 0.0f );
-
+				pos_aux = heroi.posicao + direcao;
 			}
 
 		} while ( colidiu );
@@ -144,35 +144,22 @@ int main (int argc, char *argv[]) {
 
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+		//Ambiente e personagens
 		textura_shader.usar();
 		
 		mapa.mostrar_ambiente( textura_shader );
 
 		mapa.mostrar_personagens( textura_shader );
 
+		//Paredes
+		normal_shader.usar();
+
+		mapa.mostrar_paredes( normal_shader );
+
+		//Auxiliares
 		shader.usar();
 
-		direcao._x = float( cos(t) * 0.5 );
-		direcao._y = float( sin(t) * 0.5 );
-
-		direcao = unitario( direcao );
-
-		mudar_i( shader, "qtd_barreiras", 4 );
-
-		std::string nome_1 = "barreiras[-].pos_1";
-		std::string nome_2 = "barreiras[-].pos_2";
-
-		for ( int i = 0; i < 4; i++ )
-		{
-			nome_1[10] = '0' + i;
-			nome_2[10] = '0' + i;
-			
-			mudarVec2_fv( shader, nome_1, parede.barreiras[i].p_final.coord );
-			mudarVec2_fv( shader, nome_2, parede.barreiras[i].p_inicial.coord );
-		}
-		
 		mapa.mostrar_auxiliares( shader );
-		//fundo.mostrar();
 
 		tela.swap_tela();
 

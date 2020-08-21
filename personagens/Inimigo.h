@@ -66,6 +66,29 @@ public:
         Personagem<T>::posicao = caminho[0];
     }
 
+     Inimigo ( T tamanho, T angulo
+            , std::vector<Vec_2<T>> caminho, unsigned int tempo_inicial, unsigned int tempo_caminho
+            , std::vector<bool> esperar, unsigned int tempo_espera
+            , T largura, T altura, unsigned int id_textura )
+    : Personagem<T>()
+    , tamanho( tamanho )
+    , angulo( cos( angulo ) )
+    , estado( -1 )
+    , caminho( caminho )
+    , tempo_inicial( tempo_inicial )
+    , tempo_caminho( tempo_caminho )
+    , esperar( esperar )
+    , tempo_espera( tempo_espera )
+    , esperando( false )
+    , id_textura( id_textura )
+    {
+        tamanho_textura = Vec_2<T>( largura / T( 2 ), altura / T( 2 ) );
+        dimen = Vec_2<T>( tamanho, tamanho );
+        
+        atualizar_caminho();
+        Personagem<T>::posicao = caminho[0];
+    }
+
     void mover ( const Vec_2<T> &direcao, T magnitude )
     {
         Personagem<T>::posicao += direcao * magnitude;
@@ -139,14 +162,26 @@ public:
         direcao = unitario( direcao );
     }
 
-    bool posicao_vista ( Vec_2<T> pos )
+    bool posicao_vista ( Vec_2<T> pos, Vec_2<T> *barreiras, int qtd_barreiras )
     {
         const Vec_2<T> direcao_pos = pos - Personagem<T>::posicao;
         const Vec_2<T> direcao_uni = unitario( direcao_pos );
+        T dist;
 
         if ( norma( direcao_pos ) <= tamanho
-        && produto_escalar( direcao_uni, direcao ) >= angulo )
+        && produto_escalar( direcao_uni, direcao ) >= angulo ) {
+
+            for ( int i = 0; i < qtd_barreiras; i++ ) {
+                if( teste_colisao( Personagem<T>::posicao, pos
+                                 , barreiras[i * 3], barreiras[( i * 3 ) + 1]
+                                 , barreiras[( i * 3 ) + 2], dist ) )
+                    
+                    return false;
+            }
+            
             return true;
+        }
+            
         return false;
     }
 
