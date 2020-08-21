@@ -51,13 +51,20 @@ public:
 	    EBO = criar_element_buffer( indices_img, 6 );
 
         std::vector<Vec_2<T>> caminho;
+        std::vector<bool> esperar;
         caminho.push_back( Vec_2<T>(-0.5f,  0.5f ) );
         caminho.push_back( Vec_2<T>( 0.5f,  0.5f ) );
         caminho.push_back( Vec_2<T>( 0.5f, -0.5f ) );
         caminho.push_back( Vec_2<T>(-0.5f, -0.5f ) );
 
-        inimigos.push_back( Inimigo<T>( T(1.5), T( M_PI_2 )
+        esperar.push_back( true );
+        esperar.push_back( true );
+        esperar.push_back( true );
+        esperar.push_back( true );
+
+        inimigos.push_back( Inimigo<T>( T(0.5), T( M_PI_4 / 2.0 )
                           , caminho, 0, 2000
+                          , esperar, 1000
                           , 0.05f, 0.05f , "modelos/inimigo.png" ) );
     }
 
@@ -94,8 +101,21 @@ public:
 
     void loop ( unsigned int tempo )
     {
+        bool perdeu = false;
+
         for ( int i = 0; i < inimigos.size(); i++ ) {
+            perdeu = perdeu || inimigos[i].posicao_vista( heroi->posicao );
+            if ( perdeu )
+                break;
             inimigos[i].loop( tempo );
+        }
+
+        if ( perdeu ) {
+            restart();
+
+            for ( int i = 0; i < inimigos.size(); i++ ) {
+                inimigos[i].restart( tempo );
+            }
         }
     }
 };

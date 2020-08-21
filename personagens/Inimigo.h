@@ -15,15 +15,19 @@ public:
 
     unsigned int tempo_caminho;
     std::vector<Vec_2<T>> caminho;
+    std::vector<bool> esperar;
     unsigned int tempo_inicial;
+    unsigned int tempo_espera;
     T dist_caminhar;
 
     int estado;
+    bool esperando;
 
     unsigned int id_textura;
     
     Inimigo ( T tamanho, T angulo
             , std::vector<Vec_2<T>> caminho, unsigned int tempo_inicial, unsigned int tempo_caminho
+            , std::vector<bool> esperar, unsigned int tempo_espera
             , T largura, T altura, std::string nome_img )
     : Personagem<T>()
     , tamanho( tamanho )
@@ -32,6 +36,9 @@ public:
     , caminho( caminho )
     , tempo_inicial( tempo_inicial )
     , tempo_caminho( tempo_caminho )
+    , esperar( esperar )
+    , tempo_espera( tempo_espera )
+    , esperando( false )
     {
         int text_largura;
         int text_altura;
@@ -69,12 +76,21 @@ public:
         const unsigned int dif_tempo = tempo - tempo_inicial;
         T caminhado;
         
-        if ( dif_tempo <= tempo_caminho ) {
-            caminhado = T(dif_tempo) / T(tempo_caminho);
+        if ( !esperando ) {
+            if ( dif_tempo <= tempo_caminho ) {
+                caminhado = T(dif_tempo) / T(tempo_caminho);
+            } else {
+                caminhado = T(0);
+                tempo_inicial += tempo_caminho;
+                atualizar_caminho( !esperar[( estado + 1 ) % esperar.size()] );
+                esperando = esperar[estado];
+            }
         } else {
-            caminhado = T(dif_tempo - tempo_caminho) / T(tempo_caminho);
-            tempo_inicial += tempo_caminho;
-            atualizar_caminho();
+            if ( dif_tempo > tempo_espera ) {
+                esperando = false;
+                tempo_inicial += tempo_espera;
+                atualizar_direcao();
+            }
         }
 
         Personagem<T>::posicao = caminho[estado] + ( direcao * dist_caminhar * caminhado );
@@ -108,12 +124,40 @@ public:
 		glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0 );
     }
 
-    void atualizar_caminho ()
+    void atualizar_caminho ( bool atu_direcao = true )
     {
         estado = ( estado + 1 ) % caminho.size();
+        if ( atu_direcao ) {
+            atualizar_direcao();
+        }
+    }
+
+    void atualizar_direcao ()
+    {
         direcao = caminho[( estado + 1 ) % caminho.size()] - caminho[estado];
         dist_caminhar = norma( direcao );
         direcao = unitario( direcao );
+    }
+
+    bool posicao_vista ( Vec_2<T> pos )
+    {
+        const Vec_2<T> direcao_pos = pos - Personagem<T>::posicao;
+        const Vec_2<T> direcao_uni = unitario( direcao_pos );
+
+        if ( norma( direcao_pos ) <= tamanho
+        && produto_escalar( direcao_uni, direcao ) >= angulo )
+            return true;
+        return false;
+    }
+
+    void restart ( unsigned int tempo )
+    {
+        estado = -1;
+        tempo_inicial = tempo;
+        esperando = false;
+
+        atualizar_caminho();
+        Personagem<T>::posicao = caminho[estado];
     }
 };
 
