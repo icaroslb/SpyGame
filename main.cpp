@@ -99,6 +99,8 @@ int main (int argc, char *argv[]) {
 		SDL_PumpEvents();
 		estado_teclado = SDL_GetKeyboardState( NULL );
 
+		mapa.loop( novo_tempo );
+
 		if ( estado_teclado[SDL_SCANCODE_W] )
 			direcao += Vec_2f( 0.0f, 1.0f );
 
@@ -155,10 +157,6 @@ int main (int argc, char *argv[]) {
 
 		direcao = unitario( direcao );
 
-		mudarVec2_fv( shader, "posicao_objeto", posicao.coord );
-		mudarVec2_fv( shader, "direcao", unitario( direcao ).coord );
-		mudar_f( shader, "raio", 0.5f );
-		mudar_f( shader, "abertura", cos( M_PI_4 * 0.25 ) );
 		mudar_i( shader, "qtd_barreiras", 4 );
 
 		std::string nome_1 = "barreiras[-].pos_1";
@@ -173,7 +171,8 @@ int main (int argc, char *argv[]) {
 			mudarVec2_fv( shader, nome_2, parede.barreiras[i].p_inicial.coord );
 		}
 		
-		fundo.mostrar();
+		mapa.mostrar_auxiliares( shader );
+		//fundo.mostrar();
 
 		tela.swap_tela();
 

@@ -19,10 +19,12 @@ public:
     std::vector<Inimigo<T>> inimigos;
 
     Vec_2<T> posicao;
+    Vec_2<T> saida;
 
     unsigned int id_textura;
     unsigned int VAO;
     unsigned int EBO;
+    Vec_2<T> dimen_textura;
 
     Mapa ( Heroi<T> *heroi, std::string nome_fundo )
     : heroi( heroi )
@@ -42,9 +44,21 @@ public:
         unsigned int indices_img[] = { 0, 1, 3,
 	                                   1, 2, 3 };
         int divisoes_img[] = { 2, 2 };
+
+        dimen_textura = Vec_2<T>( T(1), T(1) );
         
         VAO = criar_vertice_buffer( vertices_img, sizeof(T), 4, 16, 2, divisoes_img );
 	    EBO = criar_element_buffer( indices_img, 6 );
+
+        std::vector<Vec_2<T>> caminho;
+        caminho.push_back( Vec_2<T>(-0.5f,  0.5f ) );
+        caminho.push_back( Vec_2<T>( 0.5f,  0.5f ) );
+        caminho.push_back( Vec_2<T>( 0.5f, -0.5f ) );
+        caminho.push_back( Vec_2<T>(-0.5f, -0.5f ) );
+
+        inimigos.push_back( Inimigo<T>( T(1.5), T( M_PI_2 )
+                          , caminho, 0, 2000
+                          , 0.05f, 0.05f , "modelos/inimigo.png" ) );
     }
 
     void restart ()
@@ -58,6 +72,7 @@ public:
         usar_element_buffer( EBO );
         
         mudarVec2_fv( shader, "posicao_objeto", posicao.coord );
+        mudarVec2_fv( shader, "dimen", dimen_textura.coord );
         
         glBindTexture( GL_TEXTURE_2D, id_textura );
 		glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0 );
@@ -65,11 +80,24 @@ public:
 
     void mostrar_personagens ( const Shader &shader )
     {
-        heroi->mostrar( shader );
+        heroi->mostrar_personagem( shader );
+
+        for ( auto i : inimigos )
+            i.mostrar_personagem( shader );
     }
 
-    void mostrar_auxiliares ()
-    {}
+    void mostrar_auxiliares ( const Shader &shader )
+    {
+        for ( auto i : inimigos )
+            i.mostrar_auxiliar( shader );
+    }
+
+    void loop ( unsigned int tempo )
+    {
+        for ( int i = 0; i < inimigos.size(); i++ ) {
+            inimigos[i].loop( tempo );
+        }
+    }
 };
 
 #endif

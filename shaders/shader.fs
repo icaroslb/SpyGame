@@ -8,8 +8,8 @@ struct Barreira {
 out vec4 FragColor;
 
 in vec2 posicao_pixel;
+in vec2 posicao_objeto;
 
-uniform vec2 posicao_objeto;
 uniform vec2 direcao;
 uniform float raio;
 uniform float abertura;
@@ -34,7 +34,6 @@ void main () {
 	&&   dot( normalize( dist ), direcao ) > abertura ) {
 		for ( int i = 0; i < qtd_barreiras; ++i ) {
 			teste_colisao = colisao( posicao_objeto, posicao_pixel,
-			                    //     barreiras[(i*2)], barreiras[(i*2)+1] );
 								     barreiras[i].pos_1, barreiras[i].pos_2 );
 			if ( teste_colisao ) {
 				houve_colisao = true;
@@ -43,7 +42,7 @@ void main () {
 		}
 
 		if ( !houve_colisao )
-			luz.w = ( raio_quadrado - dist_quadrada ) / raio_quadrado;
+			luz.w = ( ( raio_quadrado - dist_quadrada ) / raio_quadrado ) * 0.5;
 	}
 	
 
