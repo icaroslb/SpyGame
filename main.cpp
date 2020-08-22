@@ -54,7 +54,7 @@ int main (int argc, char *argv[]) {
 
 	Heroi<float> heroi( Vec_2f(0.0f, 0.0f), 0.05f, 0.05f, "modelos/heroi.png" );
 
-	Mapa<float> mapa( &heroi, "modelos/chao.png" );
+	Mapa<float> mapa( &heroi, "modelos/chao.png", "modelos/saida.png" );
 
 	while ( loop ) {
 
@@ -74,7 +74,8 @@ int main (int argc, char *argv[]) {
 				switch ( evento.key.keysym.sym )
 				{
 				case SDLK_SPACE:
-					mapa.restart( novo_tempo );
+					if ( mapa.venceu )
+						mapa.restart( novo_tempo );
 				break;
 				
 				default:
@@ -95,47 +96,50 @@ int main (int argc, char *argv[]) {
 		SDL_PumpEvents();
 		estado_teclado = SDL_GetKeyboardState( NULL );
 
-		mapa.loop( novo_tempo );
+		if ( !mapa.venceu ) {
+			mapa.loop( novo_tempo );
 
-		if ( estado_teclado[SDL_SCANCODE_W] )
-			direcao += Vec_2f( 0.0f, 1.0f );
+			if ( estado_teclado[SDL_SCANCODE_W] )
+				direcao += Vec_2f( 0.0f, 1.0f );
 
-		if ( estado_teclado[SDL_SCANCODE_A] )
-			direcao += Vec_2f( -1.0f, 0.0f );
+			if ( estado_teclado[SDL_SCANCODE_A] )
+				direcao += Vec_2f( -1.0f, 0.0f );
 
-		if ( estado_teclado[SDL_SCANCODE_S] )
-			direcao += Vec_2f( 0.0f, -1.0f );
+			if ( estado_teclado[SDL_SCANCODE_S] )
+				direcao += Vec_2f( 0.0f, -1.0f );
 			
-		if ( estado_teclado[SDL_SCANCODE_D] )
-			direcao += Vec_2f( 1.0f, 0.0f );
+			if ( estado_teclado[SDL_SCANCODE_D] )
+				direcao += Vec_2f( 1.0f, 0.0f );
 			
-		direcao = unitario( direcao ) * fator_tempo;
-		pos_aux = heroi.posicao + direcao;
-		do {
-			colidiu = false;
+			direcao = unitario( direcao ) * fator_tempo;
+			pos_aux = heroi.posicao + direcao;
+			do {
+				colidiu = false;
 
-			distancia_colisao = std::numeric_limits<float>::infinity();
-			distancia_colisao_aux = 0.0f;
+				distancia_colisao = std::numeric_limits<float>::infinity();
+				distancia_colisao_aux = 0.0f;
 
-			for ( int i = 0; i < mapa.paredes.size(); i++ ) {
-				colidiu = colidiu || mapa.paredes[i].testar_colisao( heroi.posicao, pos_aux, normal_aux, distancia_colisao_aux );
+				for ( int i = 0; i < mapa.paredes.size(); i++ ) {
+					colidiu = colidiu || mapa.paredes[i].testar_colisao( heroi.posicao, pos_aux, normal_aux, distancia_colisao_aux );
 				
-				if ( colidiu && distancia_colisao_aux < distancia_colisao ) {
-					distancia_colisao = distancia_colisao_aux;
-					normal = normal_aux;
+					if ( colidiu && distancia_colisao_aux < distancia_colisao ) {
+						distancia_colisao = distancia_colisao_aux;
+						normal = normal_aux;
+					}
 				}
-			}
 
-			if ( colidiu ) {
-				if ( isinf( distancia_colisao ) )
-					heroi.posicao -= unitario( direcao ) * 0.01f;
+				if ( colidiu ) {
+					if ( isinf( distancia_colisao ) )
+						heroi.posicao -= unitario( direcao ) * 0.01f;
 				
-				direcao = colisao( direcao, normal, 1.0f, 0.0f );
-				pos_aux = heroi.posicao + direcao;
-			}
+					direcao = colisao( direcao, normal, 1.0f, 0.0f );
+					pos_aux = heroi.posicao + direcao;
+				}
 
-		} while ( colidiu );
-		heroi.posicao = pos_aux;
+			} while ( colidiu );
+			heroi.posicao = pos_aux;
+
+		}
 
 		/***********************************************************************/
 		/*********************************PRINT*********************************/

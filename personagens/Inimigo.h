@@ -109,6 +109,7 @@ public:
                 esperando = esperar[estado];
             }
         } else {
+            caminhado = T(0);
             if ( dif_tempo > tempo_espera ) {
                 esperando = false;
                 tempo_inicial += tempo_espera;
