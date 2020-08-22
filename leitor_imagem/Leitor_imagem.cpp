@@ -18,7 +18,7 @@ unsigned int ler_imagem ( std::string nome_imagem, int &largura, int &altura, in
 	data = stbi_load( nome_imagem.data(), &largura, &altura, &n_canais, 0 );
 	
 	if ( data ) {
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, largura, altura, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, largura, altura, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
     	glGenerateMipmap( GL_TEXTURE_2D );
 	} else {
 		std::cout << "Falha ao ler a imagem " << nome_imagem << "!" << std::endl;

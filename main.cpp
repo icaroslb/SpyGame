@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "camera/Camera.h"
 #include "engines/Engine_OpenGl.h"
 #include "engines/Engine_SDL.h"
@@ -10,7 +11,7 @@
 #include "io/Teclado.h"
 
 #include "objetos/Plano_2d.h"
-#include "personagens/Heroi.h"
+#include "mapas/Mapa.h"
 
 int main (int argc, char *argv[]) {
     Camera<float> camera( Vec_3f(  0.0f,  0.0f,  0.0f ), // Posição
@@ -24,6 +25,7 @@ int main (int argc, char *argv[]) {
 	Engine_OpenGl opengl;
 	Shader shader( "shaders/shader.vs", "shaders/shader.fs" );
 	Shader textura_shader( "shaders/textura_shader.vs", "shaders/textura_shader.fs" );
+	Shader normal_shader( "shaders/normal_shader.vs", "shaders/normal_shader.fs" );
 	
 	SDL_Event evento;
 	bool loop = true;
@@ -36,15 +38,10 @@ int main (int argc, char *argv[]) {
 
 	printf( "Versão do OpenGl: %s\n", tela.obter_versao_opengl() );
 
-	Plano_2d<float> fundo( Vec_2f(  1.0f,  1.0f )
-	                     , Vec_2f(  1.0f, -1.0f )
-						 , Vec_2f( -1.0f, -1.0f )
-						 , Vec_2f( -1.0f,  1.0f )
-						 );
-
 	Vec_2f posicao;
 	Vec_2f direcao;
 	Vec_2f normal;
+	Vec_2f normal_aux;
 	float t = 0;
 
 	float distancia_colisao;
@@ -55,7 +52,9 @@ int main (int argc, char *argv[]) {
 	
 	Teclado teclado;
 
-	Heroi<float> heroi( Vec_2f(0.0f, 0.0f), 0.05f, 0.05f, "modelos/Heroi.png" );
+	Heroi<float> heroi( Vec_2f(0.0f, 0.0f), 0.05f, 0.05f, "modelos/heroi.png" );
+
+	Mapa<float> mapa( &heroi, "modelos/chao.png", "modelos/saida.png" );
 
 	while ( loop ) {
 
@@ -70,6 +69,17 @@ int main (int argc, char *argv[]) {
 				}
 				if ( evento.key.state == SDL_RELEASED ) {
 					teclado.mudar_estado( evento.key.keysym.sym );
+				}
+
+				switch ( evento.key.keysym.sym )
+				{
+				case SDLK_SPACE:
+					if ( mapa.venceu )
+						mapa.restart( novo_tempo );
+				break;
+				
+				default:
+				break;
 				}
 			}
 		}
@@ -86,41 +96,50 @@ int main (int argc, char *argv[]) {
 		SDL_PumpEvents();
 		estado_teclado = SDL_GetKeyboardState( NULL );
 
-		if ( estado_teclado[SDL_SCANCODE_W] )
-			direcao += Vec_2f( 0.0f, 1.0f );
+		if ( !mapa.venceu ) {
+			mapa.loop( novo_tempo );
 
-		if ( estado_teclado[SDL_SCANCODE_A] )
-			direcao += Vec_2f( -1.0f, 0.0f );
+			if ( estado_teclado[SDL_SCANCODE_W] || estado_teclado[SDL_SCANCODE_UP] )
+				direcao += Vec_2f( 0.0f, 1.0f );
 
-		if ( estado_teclado[SDL_SCANCODE_S] )
-			direcao += Vec_2f( 0.0f, -1.0f );
+			if ( estado_teclado[SDL_SCANCODE_A] || estado_teclado[SDL_SCANCODE_LEFT] )
+				direcao += Vec_2f( -1.0f, 0.0f );
+
+			if ( estado_teclado[SDL_SCANCODE_S] || estado_teclado[SDL_SCANCODE_DOWN] )
+				direcao += Vec_2f( 0.0f, -1.0f );
 			
-		if ( estado_teclado[SDL_SCANCODE_D] )
-			direcao += Vec_2f( 1.0f, 0.0f );
+			if ( estado_teclado[SDL_SCANCODE_D] || estado_teclado[SDL_SCANCODE_RIGHT] )
+				direcao += Vec_2f( 1.0f, 0.0f );
 			
-		direcao = unitario( direcao );
-		pos_aux = heroi.posicao + ( direcao * fator_tempo );
-		do {
-			colidiu = false;
+			direcao = unitario( direcao ) * fator_tempo;
+			pos_aux = heroi.posicao + direcao;
+			do {
+				colidiu = false;
 
-			distancia_colisao = std::numeric_limits<float>::infinity();
-			distancia_colisao_aux = 0.0f;
+				distancia_colisao = std::numeric_limits<float>::infinity();
+				distancia_colisao_aux = 0.0f;
 
-			colidiu = parede.testar_colisao( heroi.posicao, pos_aux, normal, distancia_colisao );
-			
-			if ( colidiu ) {
+				for ( int i = 0; i < mapa.paredes.size(); i++ ) {
+					colidiu = colidiu || mapa.paredes[i].testar_colisao( heroi.posicao, pos_aux, normal_aux, distancia_colisao_aux );
 				
-				if ( !isinf( distancia_colisao ) )
-					pos_aux = heroi.posicao + ( direcao * distancia_colisao * 0.99f );
-				else
-					pos_aux = heroi.posicao;
+					if ( colidiu && distancia_colisao_aux < distancia_colisao ) {
+						distancia_colisao = distancia_colisao_aux;
+						normal = normal_aux;
+					}
+				}
+
+				if ( colidiu ) {
+					if ( isinf( distancia_colisao ) )
+						heroi.posicao -= unitario( direcao ) * 0.01f;
 				
-				direcao = colisao( direcao, normal, 1.0f, 0.0f );
+					direcao = colisao( direcao, normal, 1.0f, 0.0f );
+					pos_aux = heroi.posicao + direcao;
+				}
 
-			}
+			} while ( colidiu );
+			heroi.posicao = pos_aux;
 
-		} while ( colidiu );
-		heroi.posicao = pos_aux;
+		}
 
 		/***********************************************************************/
 		/*********************************PRINT*********************************/
@@ -129,34 +148,22 @@ int main (int argc, char *argv[]) {
 
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+		//Ambiente e personagens
 		textura_shader.usar();
-
-		heroi.mostrar( textura_shader );
 		
+		mapa.mostrar_ambiente( textura_shader );
+
+		mapa.mostrar_personagens( textura_shader );
+
+		//Paredes
+		normal_shader.usar();
+
+		mapa.mostrar_paredes( normal_shader );
+
+		//Auxiliares
 		shader.usar();
 
-		direcao._x = float( cos(t) * 0.5 );
-		direcao._y = float( sin(t) * 0.5 );
-
-		direcao = unitario( direcao );
-
-		mudarVec2_fv( shader, "posicao_objeto", posicao.coord );
-		mudarVec2_fv( shader, "direcao", unitario( direcao ).coord );
-		mudar_f( shader, "raio", 0.5f );
-		mudar_f( shader, "abertura", cos( M_PI_4 * 0.25 ) );
-
-		
-		mudarVec2_fv( shader, "barreiras[0].pos_1", parede.barreiras[0].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[0].pos_2", parede.barreiras[0].p_final.coord );
-		mudarVec2_fv( shader, "barreiras[1].pos_1", parede.barreiras[1].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[1].pos_2", parede.barreiras[1].p_final.coord );
-		mudarVec2_fv( shader, "barreiras[2].pos_1", parede.barreiras[2].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[2].pos_2", parede.barreiras[2].p_final.coord );
-		mudarVec2_fv( shader, "barreiras[3].pos_1", parede.barreiras[3].p_inicial.coord );
-		mudarVec2_fv( shader, "barreiras[3].pos_2", parede.barreiras[3].p_final.coord );
-
-		
-		fundo.mostrar();
+		mapa.mostrar_auxiliares( shader );
 
 		tela.swap_tela();
 

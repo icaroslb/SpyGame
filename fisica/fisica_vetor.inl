@@ -11,6 +11,7 @@ bool teste_colisao ( const Vec_2<T> &p_1_1, const Vec_2<T> &p_1_2
 
 	if ( valor_1 <= T(0) && valor_2 <= T(0) ){
 		dist = produto_escalar( p_2_1 - p_1_1, normal ) / produto_escalar( v_1, normal );
+
 		return true;
 	} else {
 		return false;
