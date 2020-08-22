@@ -99,16 +99,16 @@ int main (int argc, char *argv[]) {
 		if ( !mapa.venceu ) {
 			mapa.loop( novo_tempo );
 
-			if ( estado_teclado[SDL_SCANCODE_W] )
+			if ( estado_teclado[SDL_SCANCODE_W] || estado_teclado[SDL_SCANCODE_UP] )
 				direcao += Vec_2f( 0.0f, 1.0f );
 
-			if ( estado_teclado[SDL_SCANCODE_A] )
+			if ( estado_teclado[SDL_SCANCODE_A] || estado_teclado[SDL_SCANCODE_LEFT] )
 				direcao += Vec_2f( -1.0f, 0.0f );
 
-			if ( estado_teclado[SDL_SCANCODE_S] )
+			if ( estado_teclado[SDL_SCANCODE_S] || estado_teclado[SDL_SCANCODE_DOWN] )
 				direcao += Vec_2f( 0.0f, -1.0f );
 			
-			if ( estado_teclado[SDL_SCANCODE_D] )
+			if ( estado_teclado[SDL_SCANCODE_D] || estado_teclado[SDL_SCANCODE_RIGHT] )
 				direcao += Vec_2f( 1.0f, 0.0f );
 			
 			direcao = unitario( direcao ) * fator_tempo;
