@@ -7,39 +7,39 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:export-ydpi="118.46399"
-   inkscape:export-xdpi="118.46399"
-   inkscape:export-filename="/home/litoraneo/Documentos/Atividades/jogo_espiao/modelos/saida.png"
-   sodipodi:docname="saida.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   id="svg8"
-   version="1.1"
-   viewBox="0 0 264.58333 264.58334"
+   width="1000"
    height="1000"
-   width="1000">
+   viewBox="0 0 264.58333 264.58334"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="saida.svg"
+   inkscape:export-filename="/home/litoraneo/Documentos/Atividades/jogo_espiao/modelos/saida.png"
+   inkscape:export-xdpi="118.46399"
+   inkscape:export-ydpi="118.46399">
   <defs
      id="defs2" />
   <sodipodi:namedview
-     inkscape:window-maximized="1"
-     inkscape:window-y="27"
-     inkscape:window-x="0"
-     inkscape:window-height="704"
-     inkscape:window-width="1366"
-     inkscape:snap-page="true"
-     units="px"
-     showgrid="false"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="layer1"
-     inkscape:document-units="mm"
-     inkscape:cy="560"
-     inkscape:cx="400"
-     inkscape:zoom="0.35"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     borderopacity="1.0"
-     bordercolor="#666666"
+     id="base"
      pagecolor="#ffffff"
-     id="base" />
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="400"
+     inkscape:cy="560"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     units="px"
+     inkscape:snap-page="true"
+     inkscape:window-width="1366"
+     inkscape:window-height="704"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -48,24 +48,24 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     id="layer1"
+     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     inkscape:label="Layer 1">
+     id="layer1">
     <path
-       transform="scale(0.26458333)"
+       id="path833"
+       style="fill:#2a7fff;stroke-width:9.99999;stroke-linecap:round"
        d="M 500 0 A 500.00001 500.00001 0 0 0 0 500 A 500.00001 500.00001 0 0 0 500 1000 A 500.00001 500.00001 0 0 0 1000 500 A 500.00001 500.00001 0 0 0 500 0 z M 500 120.84961 A 379.15007 379.15007 0 0 1 879.15039 500 A 379.15007 379.15007 0 0 1 500 879.15039 A 379.15007 379.15007 0 0 1 120.84961 500 A 379.15007 379.15007 0 0 1 500 120.84961 z "
-       style="fill:#0044aa;stroke-width:9.99999;stroke-linecap:round"
-       id="path833" />
+       transform="scale(0.26458333)" />
     <circle
-       r="73.069122"
-       cy="132.29167"
-       cx="132.29167"
+       style="fill:#2a7fff;stroke-width:1.46138;stroke-linecap:round"
        id="circle837"
-       style="fill:#0044aa;stroke-width:1.46138;stroke-linecap:round" />
+       cx="132.29167"
+       cy="132.29167"
+       r="73.069122" />
   </g>
 </svg>

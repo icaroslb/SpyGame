@@ -7,39 +7,39 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="heroi.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   inkscape:export-ydpi="119"
-   inkscape:export-xdpi="119"
-   inkscape:export-filename="/home/litoraneo/Documentos/Atividades/jogo_espiao/modelos/Heroi.png"
-   id="svg1021"
-   version="1.1"
-   viewBox="0 0 264.58333 264.58334"
+   width="1000"
    height="1000"
-   width="1000">
+   viewBox="0 0 264.58333 264.58334"
+   version="1.1"
+   id="svg1021"
+   inkscape:export-filename="/home/litoraneo/Documentos/Atividades/jogo_espiao/modelos/Heroi.png"
+   inkscape:export-xdpi="119"
+   inkscape:export-ydpi="119"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="heroi.svg">
   <defs
      id="defs1015" />
   <sodipodi:namedview
-     inkscape:window-maximized="1"
-     inkscape:window-y="27"
-     inkscape:window-x="0"
-     inkscape:window-height="704"
-     inkscape:window-width="1366"
-     inkscape:snap-page="true"
-     units="px"
-     showgrid="false"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="layer1"
-     inkscape:document-units="mm"
-     inkscape:cy="560"
-     inkscape:cx="400"
-     inkscape:zoom="0.35"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     borderopacity="1.0"
-     bordercolor="#666666"
+     id="base"
      pagecolor="#ffffff"
-     id="base" />
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="400"
+     inkscape:cy="560"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     units="px"
+     inkscape:snap-page="true"
+     inkscape:window-width="1366"
+     inkscape:window-height="704"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata1018">
     <rdf:RDF>
@@ -48,20 +48,20 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     id="layer1"
+     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     inkscape:label="Layer 1">
+     id="layer1">
     <rect
-       y="0"
-       x="0"
-       height="264.58334"
-       width="264.58334"
+       style="fill:#2ca02c;stroke:none;stroke-width:2.64583;stroke-linecap:round"
        id="rect1584"
-       style="fill:#165016;stroke:none;stroke-width:2.64583;stroke-linecap:round" />
+       width="264.58334"
+       height="264.58334"
+       x="0"
+       y="0" />
   </g>
 </svg>
