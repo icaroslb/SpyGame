@@ -1,5 +1,5 @@
-# jogo_espiao
-Spy game made as an activity of the Mathematics and Physics for Games subject
+# SpyGame
+SpyGame was made in C++ with SDL2 and OpenGL. The main goal is to make the square escape from a labyrinth without being seen by the circles.
 
 ## Tela do jogo
 ![Tela do jogo](https://raw.githubusercontent.com/icaroslb/jogo_espiao/master/modelos/tela_jogo_espiao.png)
